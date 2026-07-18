@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="TrustTrace hackathon prototype" />
+  <title>Partner Bank — Powered by TrustTrace</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="bank-mark" aria-hidden="true">PB</div>
+      <div>
+        <div class="bank-name" data-i18n="partnerBank">Partner Bank Demo</div>
+        <div class="powered"><span data-i18n="poweredBy">Protected by</span> <strong>TrustTrace</strong></div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="status-pill"><span class="status-dot"></span><span data-i18n="sandboxMode">JOFS sandbox-ready</span></div>
+      <button class="ghost-button" id="languageToggle" type="button" aria-label="Switch language">العربية</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero-panel">
+      <div>
+        <span class="eyebrow" data-i18n="eyebrow">Embedded fraud prevention</span>
+        <h1 data-i18n="heroTitle">Protection at the moment of decision.</h1>
+        <p data-i18n="heroText">TrustTrace adds an explainable AI risk check between payment confirmation and final authorization.</p>
+      </div>
+      <div class="hero-badge">
+        <div class="shield-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" role="img"><path d="M32 4 54 12v17c0 15-8.5 25.5-22 31C18.5 54.5 10 44 10 29V12L32 4Z" fill="none" stroke="currentColor" stroke-width="4"/><path d="m21 32 7 7 15-17" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <span data-i18n="sharedEngine">One shared risk engine</span>
+          <strong data-i18n="twoEcosystems">Traditional + Web3</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <nav class="tabs" aria-label="Payment type">
+        <button class="tab active" data-tab="traditional" type="button">
+          <span class="tab-icon">01</span>
+          <span>
+            <strong data-i18n="traditionalTab">Bank payment</strong>
+            <small data-i18n="traditionalTabSub">JOFS + payment intelligence</small>
+          </span>
+        </button>
+        <button class="tab" data-tab="web3" type="button">
+          <span class="tab-icon">02</span>
+          <span>
+            <strong data-i18n="web3Tab">Web3 approval</strong>
+            <small data-i18n="web3TabSub">Blockchain intelligence</small>
+          </span>
+        </button>
+      </nav>
+
+      <div class="tab-panel active" id="traditionalPanel">
+        <div class="grid-layout">
+          <section class="card payment-card">
+            <div class="card-heading">
+              <div>
+                <span class="section-label" data-i18n="bankingJourney">Existing banking journey</span>
+                <h2 data-i18n="confirmTransfer">Confirm transfer</h2>
+              </div>
+              <span class="card-chip" data-i18n="embedded">Embedded</span>
+            </div>
+
+            <label class="field-label" for="traditionalScenario" data-i18n="demoScenario">Demo scenario</label>
+            <select id="traditionalScenario" class="select-control">
+              <option value="safe" data-i18n="safeRetailer">Trusted retailer — safe</option>
+              <option value="suspicious" data-i18n="fakeVisa">Fake e-visa merchant — suspicious</option>
+            </select>
+
+            <div class="account-card">
+              <div>
+                <span data-i18n="fromAccount">From account</span>
+                <strong id="accountName">Leen Ahmad</strong>
+                <small id="accountIban">JO94 **** **** 1932</small>
+              </div>
+              <div class="balance-block">
+                <span data-i18n="available">Available</span>
+                <strong id="accountBalance">2,450.75 JOD</strong>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="beneficiary" data-i18n="beneficiary">Beneficiary</label>
+                <input id="beneficiary" readonly />
+              </div>
+              <div class="form-field">
+                <label for="merchant" data-i18n="merchant">Merchant</label>
+                <input id="merchant" readonly />
+              </div>
+              <div class="form-field">
+                <label for="amount" data-i18n="amount">Amount</label>
+                <div class="input-with-suffix">
+                  <input id="amount" type="number" min="1" step="0.01" />
+                  <span>JOD</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="domain" data-i18n="paymentDomain">Payment domain</label>
+                <input id="domain" readonly />
+              </div>
+            </div>
+
+            <div class="notice-box">
+              <span class="notice-icon">i</span>
+              <p data-i18n="bankNotice">The bank remains in control of authorization. TrustTrace provides an explainable advisory risk signal.</p>
+            </div>
+
+            <button id="confirmTraditional" class="primary-button" type="button">
+              <span data-i18n="confirmPayment">Confirm payment</span>
+              <span class="button-arrow">→</span>
+            </button>
+          </section>
+
+          <aside class="card context-card">
+            <div class="card-heading compact">
+              <div>
+                <span class="section-label" data-i18n="dataContext">Data context</span>
+                <h3 data-i18n="traditionalSignals">Traditional payment signals</h3>
+              </div>
+            </div>
+            <div class="signal-list">
+              <div class="signal-item"><span>JOFS</span><div><strong data-i18n="accountContext">Account context</strong><small data-i18n="accountContextSub">Account, balance and beneficiary</small></div></div>
+              <div class="signal-item"><span>MR</span><div><strong data-i18n="merchantIntel">Merchant intelligence</strong><small data-i18n="merchantIntelSub">Verification and scam history</small></div></div>
+              <div class="signal-item"><span>WB</span><div><strong data-i18n="websiteIntel">Website intelligence</strong><small data-i18n="websiteIntelSub">Domain trust and phishing reports</small></div></div>
+              <div class="signal-item"><span>BH</span><div><strong data-i18n="behaviour">Behavioural signals</strong><small data-i18n="behaviourSub">Amount, device, location and attempts</small></div></div>
+            </div>
+            <div class="architecture-mini">
+              <div class="source-node" data-i18n="paymentRequest">Payment request</div>
+              <div class="flow-line"></div>
+              <div class="engine-node">TrustTrace AI</div>
+              <div class="flow-line"></div>
+              <div class="output-row">
+                <span class="output safe" data-i18n="lowRisk">Low risk</span>
+                <span class="output review" data-i18n="review">Review</span>
+                <span class="output danger" data-i18n="highRisk">High risk</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="web3Panel">
+        <div class="grid-layout">
+          <section class="card payment-card">
+            <div class="card-heading">
+              <div>
+                <span class="section-label" data-i18n="walletJourney">Existing wallet journey</span>
+                <h2 data-i18n="approveRequest">Approve token request</h2>
+              </div>
+              <span class="card-chip" data-i18n="walletIntegrated">Wallet-integrated</span>
+            </div>
+
+            <label class="field-label" for="web3Scenario" data-i18n="demoScenario">Demo scenario</label>
+            <select id="web3Scenario" class="select-control">
+              <option value="safe" data-i18n="verifiedContract">Verified contract — safe</option>
+              <option value="suspicious" data-i18n="maliciousContract">Malicious approval — suspicious</option>
+            </select>
+
+            <div class="wallet-card">
+              <div class="wallet-logo">M</div>
+              <div>
+                <span data-i18n="connectedWallet">Connected wallet</span>
+                <strong>0xLEEN...0001</strong>
+                <small>Ethereum Mainnet</small>
+              </div>
+              <span class="connected-dot"><i></i><span data-i18n="connected">Connected</span></span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field wide">
+                <label for="contractAddress" data-i18n="contractAddress">Smart-contract address</label>
+                <input id="contractAddress" readonly />
+              </div>
+              <div class="form-field">
+                <label for="tokenSymbol" data-i18n="token">Token</label>
+                <input id="tokenSymbol" value="USDT" readonly />
+              </div>
+              <div class="form-field">
+                <label for="approvalLimit" data-i18n="permission">Requested permission</label>
+                <input id="approvalLimit" readonly />
+              </div>
+            </div>
+
+            <div class="notice-box">
+              <span class="notice-icon">i</span>
+              <p data-i18n="web3Notice">TrustTrace analyzes public blockchain and contract data before the wallet submits the approval.</p>
+            </div>
+
+            <button id="confirmWeb3" class="primary-button" type="button">
+              <span data-i18n="approveTransaction">Approve transaction</span>
+              <span class="button-arrow">→</span>
+            </button>
+          </section>
+
+          <aside class="card context-card">
+            <div class="card-heading compact">
+              <div>
+                <span class="section-label" data-i18n="dataContext">Data context</span>
+                <h3 data-i18n="web3Signals">Blockchain/Web3 signals</h3>
+              </div>
+            </div>
+            <div class="signal-list">
+              <div class="signal-item"><span>BC</span><div><strong data-i18n="blockchainHistory">Blockchain history</strong><small data-i18n="blockchainHistorySub">Public transaction context</small></div></div>
+              <div class="signal-item"><span>WR</span><div><strong data-i18n="walletReputation">Wallet reputation</strong><small data-i18n="walletReputationSub">Known reports and relationships</small></div></div>
+              <div class="signal-item"><span>SC</span><div><strong data-i18n="contractRisk">Smart-contract risk</strong><small data-i18n="contractRiskSub">Verification, age and activity</small></div></div>
+              <div class="signal-item"><span>TP</span><div><strong data-i18n="tokenPermissions">Token permissions</strong><small data-i18n="tokenPermissionsSub">Limited or unlimited access</small></div></div>
+            </div>
+            <div class="architecture-mini">
+              <div class="source-node" data-i18n="approvalRequest">Approval request</div>
+              <div class="flow-line"></div>
+              <div class="engine-node">TrustTrace AI</div>
+              <div class="flow-line"></div>
+              <div class="output-row">
+                <span class="output safe" data-i18n="lowRisk">Low risk</span>
+                <span class="output review" data-i18n="review">Review</span>
+                <span class="output danger" data-i18n="highRisk">High risk</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span data-i18n="prototypeFooter">Hackathon prototype — advisory risk decisions only.</span>
+      <span>TrustTrace v0.1</span>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop hidden" id="analysisModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="analysis-modal">
+      <button class="modal-close hidden" id="modalClose" type="button" aria-label="Close">×</button>
+      <div id="analysisState">
+        <div class="analysis-brand">
+          <div class="analysis-logo">TT</div>
+          <div>
+            <span data-i18n="poweredBy">Protected by</span>
+            <strong>TrustTrace AI</strong>
+          </div>
+        </div>
+        <div class="scanner-ring"><span></span><i></i></div>
+        <h2 id="modalTitle" data-i18n="analyzing">Analyzing this payment…</h2>
+        <p id="analysisSubtitle" data-i18n="analysisSubtitle">The transaction has not been authorized yet.</p>
+        <div class="progress-track"><div id="progressBar"></div></div>
+        <div class="check-list" id="checkList"></div>
+      </div>
+
+      <div id="resultState" class="hidden">
+        <div class="result-header">
+          <div class="result-icon" id="resultIcon">!</div>
+          <div>
+            <span class="section-label" data-i18n="riskAssessment">Risk assessment</span>
+            <h2 id="resultVerdict"></h2>
+            <p id="resultSummary"></p>
+          </div>
+          <div class="score-ring" id="scoreRing"><strong id="riskScore">0</strong><small>/100</small></div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <h3 data-i18n="whyFlagged">Why this decision?</h3>
+            <ul id="factorList"></ul>
+          </div>
+          <div class="result-card">
+            <h3 data-i18n="dataAnalyzed">Data analyzed</h3>
+            <ul id="dataSourceList"></ul>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="secondary-button" id="cancelAction" type="button" data-i18n="cancelPayment">Cancel payment</button>
+          <button class="primary-button" id="continueAction" type="button" data-i18n="continueAction">Continue</button>
+        </div>
+        <p class="prototype-note" id="prototypeNotice"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

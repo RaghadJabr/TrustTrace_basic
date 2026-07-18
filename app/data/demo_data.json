@@ -1,0 +1,70 @@
+{
+  "accounts": [
+    {
+      "id": "ACC-1001",
+      "name": "Leen Ahmad",
+      "masked_iban": "JO94 **** **** 1932",
+      "currency": "JOD",
+      "balance": 2450.75,
+      "average_transfer": 115.0,
+      "trusted_devices": ["LEEN-IP15", "LEEN-LAPTOP"],
+      "usual_locations": ["Amman", "Zarqa"]
+    }
+  ],
+  "beneficiaries": [
+    {
+      "id": "BEN-001",
+      "account_id": "ACC-1001",
+      "name": "Noon Jordan",
+      "bank": "Partner Bank",
+      "verified": true,
+      "previous_payments": 8
+    },
+    {
+      "id": "BEN-777",
+      "account_id": "ACC-1001",
+      "name": "Fast Visa Approval",
+      "bank": "Unknown PSP",
+      "verified": false,
+      "previous_payments": 0
+    }
+  ],
+  "merchant_profiles": {
+    "Noon Jordan": {
+      "verified": true,
+      "risk_level": "low",
+      "known_scam_reports": 0
+    },
+    "Fast Visa Approval": {
+      "verified": false,
+      "risk_level": "high",
+      "known_scam_reports": 47
+    }
+  },
+  "domain_profiles": {
+    "www.noon.com": {
+      "trusted": true,
+      "age_days": 4200,
+      "phishing_reports": 0
+    },
+    "visa-fast-approval.example": {
+      "trusted": false,
+      "age_days": 3,
+      "phishing_reports": 31
+    }
+  },
+  "web3_contracts": {
+    "0xSAFE000000000000000000000000000000000001": {
+      "verified": true,
+      "age_days": 760,
+      "scam_reports": 0,
+      "connected_risky_wallets": 0
+    },
+    "0xBAD0000000000000000000000000000000000777": {
+      "verified": false,
+      "age_days": 2,
+      "scam_reports": 22,
+      "connected_risky_wallets": 14
+    }
+  }
+}
