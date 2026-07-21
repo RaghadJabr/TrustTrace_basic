@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-
+from app.db_routes import router as db_router
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -19,6 +19,7 @@ app = FastAPI(
     version="0.1.0",
     description="Explainable pre-authorization fraud assessment for traditional and Web3 payments.",
 )
+app.include_router(db_router)
 
 jofs = JOFSAdapter()
 risk_engine = RiskEngine(jofs)
