@@ -8,11 +8,12 @@ from sqlalchemy.orm import Session
 
 from ...core.errors import TrustTraceAPIError
 from ...db.session import get_db
+from ...integrations.open_finance.provider import JOFSAdapter
 from ...ml.interfaces import FraudModelService
 from ...schemas import RiskAssessment, TraditionalRiskRequest, Web3RiskRequest
 from ...services import assessment_service
 from ...services.web3_rules_service import Web3RuleEngine
-from ..deps import get_model_service, get_web3_engine
+from ..deps import get_jofs, get_model_service, get_web3_engine
 
 router = APIRouter(tags=["assessments"])
 
@@ -22,9 +23,13 @@ async def assess_traditional(
     request: TraditionalRiskRequest,
     db: Session = Depends(get_db),
     model_service: FraudModelService = Depends(get_model_service),
+    jofs: JOFSAdapter = Depends(get_jofs),
 ) -> RiskAssessment:
     try:
-        return assessment_service.assess_traditional(db, request, model_service)
+        return await assessment_service.assess_traditional(db, request, model_service, jofs)
+    except TrustTraceAPIError:
+        db.rollback()
+        raise
     except Exception as exc:
         db.rollback()
         raise TrustTraceAPIError(

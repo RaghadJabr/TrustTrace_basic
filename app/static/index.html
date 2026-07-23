@@ -72,21 +72,44 @@
               <span class="card-chip" data-i18n="embedded">Embedded</span>
             </div>
 
-            <label class="field-label" for="traditionalScenario" data-i18n="demoScenario">Demo scenario</label>
-            <select id="traditionalScenario" class="select-control">
-              <option value="safe" data-i18n="safeRetailer">Trusted retailer — safe</option>
-              <option value="suspicious" data-i18n="fakeVisa">Fake e-visa merchant — suspicious</option>
-            </select>
+            <div class="source-toggle" role="radiogroup" aria-label="Data source">
+              <label>
+                <input type="radio" name="dataSource" value="live" id="sourceLive" checked />
+                <span data-i18n="dataSourceLive">Live JOFS account</span>
+              </label>
+              <label>
+                <input type="radio" name="dataSource" value="demo" id="sourceDemo" />
+                <span data-i18n="dataSourceDemo">Demo scenario (synthetic)</span>
+              </label>
+              <span class="jofs-mode-pill" id="jofsModePill">JOFS: …</span>
+            </div>
+
+            <div id="liveSourceBlock">
+              <label class="field-label" for="liveAccountSelect" data-i18n="liveAccountLabel">JOFS account</label>
+              <select id="liveAccountSelect" class="select-control"></select>
+
+              <label class="field-label" for="liveBeneficiarySelect" data-i18n="liveBeneficiaryLabel">Beneficiary</label>
+              <select id="liveBeneficiarySelect" class="select-control"></select>
+            </div>
+
+            <div id="demoSourceBlock" class="hidden">
+              <label class="field-label" for="traditionalScenario" data-i18n="demoScenario">Demo scenario</label>
+              <select id="traditionalScenario" class="select-control">
+                <option value="safe" data-i18n="safeRetailer">Trusted retailer — safe</option>
+                <option value="suspicious" data-i18n="fakeVisa">Fake e-visa merchant — suspicious</option>
+              </select>
+              <p class="demo-notice" data-i18n="demoScenarioNotice">Synthetic model-input scenario for demonstration — not a real JOFS account.</p>
+            </div>
 
             <div class="account-card">
               <div>
                 <span data-i18n="fromAccount">From account</span>
-                <strong id="accountName">Leen Ahmad</strong>
-                <small id="accountIban">JO94 **** **** 1932</small>
+                <strong id="accountName">—</strong>
+                <small id="accountIban"></small>
               </div>
               <div class="balance-block">
                 <span data-i18n="available">Available</span>
-                <strong id="accountBalance">2,450.75 JOD</strong>
+                <strong id="accountBalance">—</strong>
               </div>
             </div>
 
@@ -97,7 +120,7 @@
               </div>
               <div class="form-field">
                 <label for="merchant" data-i18n="merchant">Merchant</label>
-                <input id="merchant" readonly />
+                <input id="merchant" />
               </div>
               <div class="form-field">
                 <label for="amount" data-i18n="amount">Amount</label>
@@ -108,7 +131,7 @@
               </div>
               <div class="form-field">
                 <label for="domain" data-i18n="paymentDomain">Payment domain</label>
-                <input id="domain" readonly />
+                <input id="domain" />
               </div>
             </div>
 

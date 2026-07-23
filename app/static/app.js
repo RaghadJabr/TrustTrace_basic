@@ -3,6 +3,10 @@ const state = {
   scenarios: null,
   assessment: null,
   paymentType: "traditional",
+  dataSource: "live",
+  jofsMode: null,
+  liveAccounts: [],
+  liveBeneficiaries: [],
 };
 
 const translations = {
@@ -25,6 +29,11 @@ const translations = {
     demoScenario: "Demo scenario",
     safeRetailer: "Trusted retailer — safe",
     fakeVisa: "Fake e-visa merchant — suspicious",
+    dataSourceLive: "Live JOFS account",
+    dataSourceDemo: "Demo scenario (synthetic)",
+    liveAccountLabel: "JOFS account",
+    liveBeneficiaryLabel: "Beneficiary",
+    demoScenarioNotice: "Synthetic model-input scenario for demonstration — not a real JOFS account.",
     fromAccount: "From account",
     available: "Available",
     beneficiary: "Beneficiary",
@@ -118,6 +127,11 @@ const translations = {
     demoScenario: "سيناريو العرض",
     safeRetailer: "تاجر موثوق — آمن",
     fakeVisa: "موقع تأشيرة مزيف — مشبوه",
+    dataSourceLive: "حساب JOFS حقيقي",
+    dataSourceDemo: "سيناريو تجريبي (بيانات اصطناعية)",
+    liveAccountLabel: "حساب JOFS",
+    liveBeneficiaryLabel: "المستفيد",
+    demoScenarioNotice: "سيناريو اصطناعي لإدخال النموذج لأغراض العرض — وليس حساب JOFS حقيقي.",
     fromAccount: "من الحساب",
     available: "الرصيد المتاح",
     beneficiary: "المستفيد",
@@ -201,7 +215,9 @@ async function initialize() {
   const response = await fetch("/api/demo/scenarios");
   state.scenarios = await response.json();
   bindEvents();
-  populateTraditional("safe");
+  await loadJofsMode();
+  await loadLiveAccounts();
+  switchDataSource("live");
   populateWeb3("safe");
   applyTranslations();
 }
@@ -211,6 +227,10 @@ function bindEvents() {
     button.addEventListener("click", () => switchTab(button.dataset.tab));
   });
   $("languageToggle").addEventListener("click", toggleLanguage);
+  $("sourceLive").addEventListener("change", () => switchDataSource("live"));
+  $("sourceDemo").addEventListener("change", () => switchDataSource("demo"));
+  $("liveAccountSelect").addEventListener("change", (event) => onLiveAccountChange(event.target.value));
+  $("liveBeneficiarySelect").addEventListener("change", (event) => onLiveBeneficiaryChange(event.target.value));
   $("traditionalScenario").addEventListener("change", (event) => populateTraditional(event.target.value));
   $("web3Scenario").addEventListener("change", (event) => populateWeb3(event.target.value));
   $("confirmTraditional").addEventListener("click", () => runAssessment("traditional"));
@@ -218,6 +238,103 @@ function bindEvents() {
   $("modalClose").addEventListener("click", closeModal);
   $("cancelAction").addEventListener("click", () => finishDemo(false));
   $("continueAction").addEventListener("click", () => finishDemo(true));
+}
+
+async function loadJofsMode() {
+  try {
+    const response = await fetch("/api/health");
+    const health = await response.json();
+    state.jofsMode = health.jofs_mode;
+  } catch (error) {
+    state.jofsMode = "unknown";
+  }
+  $("jofsModePill").textContent = `JOFS: ${state.jofsMode}`;
+}
+
+function switchDataSource(mode) {
+  state.dataSource = mode;
+  $("sourceLive").checked = mode === "live";
+  $("sourceDemo").checked = mode === "demo";
+  $("liveSourceBlock").classList.toggle("hidden", mode !== "live");
+  $("demoSourceBlock").classList.toggle("hidden", mode !== "demo");
+  $("merchant").readOnly = mode === "demo";
+  $("domain").readOnly = mode === "demo";
+
+  if (mode === "demo") {
+    populateTraditional($("traditionalScenario").value);
+  } else if (state.liveAccounts.length > 0) {
+    onLiveAccountChange($("liveAccountSelect").value);
+  }
+}
+
+async function loadLiveAccounts() {
+  try {
+    const response = await fetch("/api/jofs/accounts");
+    state.liveAccounts = await response.json();
+  } catch (error) {
+    console.error(error);
+    state.liveAccounts = [];
+  }
+
+  $("liveAccountSelect").innerHTML = state.liveAccounts
+    .map((account) => {
+      const id = account.id || account.accountId;
+      return `<option value="${id}">${account.name || id}</option>`;
+    })
+    .join("");
+
+  if (state.liveAccounts.length > 0) {
+    await onLiveAccountChange($("liveAccountSelect").value);
+  }
+}
+
+async function onLiveAccountChange(accountId) {
+  const account = state.liveAccounts.find((a) => (a.id || a.accountId) === accountId);
+  $("accountName").textContent = account ? account.name || accountId : accountId;
+  $("accountIban").textContent = (account && account.masked_iban) || "";
+  $("accountBalance").textContent = "…";
+
+  if (account) {
+    $("merchant").value = $("merchant").value || "";
+    $("domain").value = $("domain").value || "";
+  }
+
+  try {
+    const response = await fetch(`/api/jofs/accounts/${accountId}/balance`);
+    const balance = await response.json();
+    $("accountBalance").textContent = `${Number(balance.available_balance).toFixed(2)} ${balance.currency}`;
+    if (!$("amount").value) $("amount").value = Math.min(50, balance.available_balance);
+  } catch (error) {
+    $("accountBalance").textContent = "—";
+  }
+
+  try {
+    const response = await fetch(`/api/jofs/accounts/${accountId}/beneficiaries`);
+    state.liveBeneficiaries = await response.json();
+  } catch (error) {
+    state.liveBeneficiaries = [];
+  }
+
+  $("liveBeneficiarySelect").innerHTML = state.liveBeneficiaries
+    .map((beneficiary) => {
+      const id = beneficiary.id || beneficiary.beneficiaryId;
+      return `<option value="${id}">${beneficiary.name || id}</option>`;
+    })
+    .join("");
+
+  if (state.liveBeneficiaries.length > 0) {
+    onLiveBeneficiaryChange($("liveBeneficiarySelect").value);
+  } else {
+    $("beneficiary").value = "";
+  }
+}
+
+function onLiveBeneficiaryChange(beneficiaryId) {
+  const beneficiary = state.liveBeneficiaries.find((b) => (b.id || b.beneficiaryId) === beneficiaryId);
+  $("beneficiary").value = beneficiary ? beneficiary.name || beneficiaryId : "";
+  if (beneficiary && !$("merchant").value) {
+    $("merchant").value = beneficiary.name || "";
+  }
 }
 
 function switchTab(tabName) {
@@ -261,14 +378,34 @@ function populateWeb3(key) {
 
 function buildRequest(type) {
   if (type === "traditional") {
-    const key = $("traditionalScenario").value;
-    const scenario = state.scenarios.traditional[key];
+    if (state.dataSource === "demo") {
+      const key = $("traditionalScenario").value;
+      const scenario = state.scenarios.traditional[key];
+
+      return {
+        ...scenario,
+        amount: Number($("amount").value),
+        merchant: $("merchant").value.trim(),
+        domain: $("domain").value.trim(),
+      };
+    }
+
+    // Live JOFS account: the backend resolves account/balance/beneficiary/
+    // transaction-history via JOFS itself -- this just identifies which
+    // account/beneficiary to assess.
+    const accountId = $("liveAccountSelect").value;
+    const beneficiaryId = $("liveBeneficiarySelect").value;
 
     return {
-      ...scenario,
+      account_id: accountId,
+      beneficiary_id: beneficiaryId,
       amount: Number($("amount").value),
-      merchant: $("merchant").value.trim(),
-      domain: $("domain").value.trim(),
+      currency: "JOD",
+      merchant: $("merchant").value.trim() || $("beneficiary").value.trim(),
+      domain: $("domain").value.trim() || "unspecified",
+      device_id: `BROWSER-${accountId}`,
+      location: "Amman",
+      rapid_attempts: 0,
     };
   }
 
@@ -343,7 +480,17 @@ function showResult(assessment) {
   $("factorList").innerHTML = assessment.factors
     .map((factor) => `<li>${state.language === "ar" ? factor.message_ar : factor.message_en}</li>`)
     .join("");
-  $("dataSourceList").innerHTML = assessment.data_sources.map((source) => `<li>${source}</li>`).join("");
+  const dataSources = [...assessment.data_sources];
+  if (assessment.account_balance !== null && assessment.account_balance !== undefined) {
+    dataSources.push(`Available balance: ${Number(assessment.account_balance).toFixed(2)}`);
+  }
+  if (assessment.funds_available !== null && assessment.funds_available !== undefined) {
+    dataSources.push(`Funds confirmation: ${assessment.funds_available ? "available" : "insufficient"}`);
+  }
+  if (assessment.beneficiary_verified !== null && assessment.beneficiary_verified !== undefined) {
+    dataSources.push(`Beneficiary verified: ${assessment.beneficiary_verified ? "yes" : "no"}`);
+  }
+  $("dataSourceList").innerHTML = dataSources.map((source) => `<li>${source}</li>`).join("");
   $("prototypeNotice").textContent = assessment.prototype_notice;
 
   const continueButton = $("continueAction");

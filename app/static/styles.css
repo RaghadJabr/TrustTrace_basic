@@ -158,6 +158,10 @@ h1 { font-size: clamp(2.15rem, 5vw, 4.6rem); line-height: .98; letter-spacing: -
 .input-with-suffix { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; background: rgba(5,14,27,.62); overflow: hidden; }
 .input-with-suffix input { border: 0; background: transparent; }
 .input-with-suffix span { color: var(--muted); padding-inline-end: 12px; font-size: .76rem; }
+.source-toggle { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; font-size: .82rem; color: var(--muted); }
+.source-toggle label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.jofs-mode-pill { margin-inline-start: auto; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(84,167,255,.3); font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; color: #8bc4ff; }
+.demo-notice { color: var(--muted); font-size: .74rem; margin: 6px 0 0; }
 .notice-box { display: flex; gap: 11px; align-items: flex-start; margin: 18px 0; padding: 13px; border: 1px solid rgba(84,167,255,.15); border-radius: 13px; background: rgba(84,167,255,.05); }
 .notice-box p { color: var(--muted); font-size: .78rem; line-height: 1.55; margin: 0; }
 .notice-icon { width: 21px; height: 21px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: rgba(84,167,255,.18); color: #8bc4ff; font-weight: 800; font-size: .72rem; }

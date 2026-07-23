@@ -42,8 +42,30 @@ class TraditionalFraudModelService(FraudModelService):
         self.booster = lgb.Booster(model_file=str(ARTIFACTS_DIR / "trusttrace_lightgbm_model.txt"))
         self._explainer = shap.TreeExplainer(self.booster)
 
+    def validate_feature_contract(self, features: dict) -> None:
+        """Explicit guard: the model input must contain exactly the 31 features
+        captured at training time, nothing missing and nothing unexpected silently
+        dropped. Raises ValueError naming the discrepancy."""
+
+        expected = set(self.schema["model_features"])
+        provided = set(features.keys())
+        missing = sorted(expected - provided)
+        unexpected = sorted(provided - expected)
+
+        if missing or unexpected:
+            parts = []
+            if missing:
+                parts.append(f"missing: {missing}")
+            if unexpected:
+                parts.append(f"unexpected: {unexpected}")
+            raise ValueError(
+                f"Feature contract violation ({len(provided)} provided, "
+                f"{len(expected)} expected) -- " + "; ".join(parts)
+            )
+
     def _to_frame(self, features: dict) -> pd.DataFrame:
-        row = {name: features.get(name) for name in self.schema["model_features"]}
+        self.validate_feature_contract(features)
+        row = {name: features[name] for name in self.schema["model_features"]}
         frame = pd.DataFrame([row])[self.schema["model_features"]]
 
         for column in self.schema["categorical_features"]:

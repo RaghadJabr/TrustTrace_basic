@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from ..models.orm import Account, Merchant, Transaction
 from ..schemas import TransactionSignals
+from .jofs_normalization import NormalizedTransaction
 
 # Bin edges below are a documented, reasonable heuristic: the training
 # notebook that produced these bins was not provided to this integration, so
@@ -97,17 +98,45 @@ def _category_history_bucket(total_transactions: int, category_matches: int) -> 
 
 
 class TransactionHistory:
-    """Real historical stats pulled from Postgres for the paying account,
-    used to compute avg_amount_deviation_sigma and merchant_category_vs_history
-    without any hand-waving -- these are actual prior transactions."""
+    """Real historical stats used to compute avg_amount_deviation_sigma and
+    merchant_category_vs_history -- no hand-waving, these are actual prior
+    transactions, merged from whichever sources are actually available:
 
-    def __init__(self, db: Session, account: Account, merchant: Merchant) -> None:
-        amounts = db.scalars(
-            select(Transaction.amount).where(Transaction.account_id == account.id)
-        ).all()
-        self.amounts: list[float] = [float(a) for a in amounts]
+    - Postgres: every transaction TrustTrace has itself assessed. Carries a
+      merchant link, so it's the only source that can contribute to
+      merchant_category_vs_history.
+    - JOFS (optional): the account's real transaction history, when supplied.
+      JOFS has no merchant-category taxonomy, so it can only widen the
+      account-level amount baseline (avg_amount_deviation_sigma), not the
+      category-match count. Deduplicated against Postgres via
+      external_transaction_id (stored in Transaction.metadata_json) so a
+      transaction already persisted locally isn't double-counted.
+    """
 
+    def __init__(
+        self,
+        db: Session,
+        account: Account,
+        merchant: Merchant,
+        jofs_transactions: list[NormalizedTransaction] | None = None,
+    ) -> None:
+        local_rows = db.scalars(select(Transaction).where(Transaction.account_id == account.id)).all()
+        local_amounts = [float(row.amount) for row in local_rows]
+        local_external_ids = {
+            row.metadata_json.get("external_transaction_id")
+            for row in local_rows
+            if row.metadata_json and row.metadata_json.get("external_transaction_id")
+        }
+
+        jofs_amounts = [
+            t.amount
+            for t in (jofs_transactions or [])
+            if t.external_transaction_id not in local_external_ids
+        ]
+
+        self.amounts: list[float] = local_amounts + jofs_amounts
         self.total_transactions = len(self.amounts)
+        self.jofs_transaction_count = len(jofs_amounts)
 
         self.category_matches = db.scalar(
             select(func.count())

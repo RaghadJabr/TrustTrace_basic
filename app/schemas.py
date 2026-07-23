@@ -118,6 +118,12 @@ class RiskAssessment(BaseModel):
     processing_time_ms: float | None = None
     created_at: datetime | None = None
 
+    # JOFS provenance (section 8/12) -- never includes secrets/credentials
+    account_balance: float | None = None
+    funds_available: bool | None = None
+    beneficiary_verified: bool | None = None
+    provenance: dict[str, object] = Field(default_factory=dict)
+
 
 class FundsConfirmationRequest(BaseModel):
     amount: float = Field(gt=0)
