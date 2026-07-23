@@ -1,0 +1,27 @@
+{
+  "trust_score_bands": [
+    { "min": 80, "max": 100, "risk_category": "high_trust", "ui_risk_level": "low" },
+    { "min": 60, "max": 79, "risk_category": "moderate_trust", "ui_risk_level": "low" },
+    { "min": 40, "max": 59, "risk_category": "elevated_risk", "ui_risk_level": "review" },
+    { "min": 20, "max": 39, "risk_category": "high_risk", "ui_risk_level": "high" },
+    { "min": 0, "max": 19, "risk_category": "critical_risk", "ui_risk_level": "high" }
+  ],
+  "recommended_action_by_category": {
+    "high_trust": "continue",
+    "moderate_trust": "continue_with_warning",
+    "elevated_risk": "verify_recipient",
+    "high_risk": "manual_review",
+    "critical_risk": "block"
+  },
+  "ui_recommendation_by_action": {
+    "continue": "continue",
+    "continue_with_warning": "continue",
+    "verify_recipient": "review",
+    "additional_authentication": "review",
+    "otp_verification": "review",
+    "delay_transaction": "review",
+    "manual_review": "review",
+    "cancel": "cancel",
+    "block": "cancel"
+  }
+}
