@@ -30,6 +30,7 @@ app = FastAPI(
     ),
 )
 
+
 jofs = JOFSAdapter()
 risk_engine = RiskEngine(jofs)
 
