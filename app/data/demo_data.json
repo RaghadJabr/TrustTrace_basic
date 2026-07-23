@@ -29,6 +29,44 @@
       "previous_payments": 0
     }
   ],
+  "transactions": [
+  {
+    "id": "TXN-001",
+    "account_id": "ACC-1001",
+    "amount": 45.0,
+    "currency": "JOD",
+    "transaction_type": "debit",
+    "channel": "CliQ",
+    "beneficiary_id": "BEN-001",
+    "beneficiary_name": "Noon Jordan",
+    "status": "accepted",
+    "date": "2026-07-01T12:30:00Z"
+  },
+  {
+    "id": "TXN-002",
+    "account_id": "ACC-1001",
+    "amount": 120.0,
+    "currency": "JOD",
+    "transaction_type": "debit",
+    "channel": "Bank Transfer",
+    "beneficiary_id": "BEN-001",
+    "beneficiary_name": "Noon Jordan",
+    "status": "accepted",
+    "date": "2026-07-05T15:10:00Z"
+  },
+  {
+    "id": "TXN-003",
+    "account_id": "ACC-1001",
+    "amount": 80.0,
+    "currency": "JOD",
+    "transaction_type": "debit",
+    "channel": "Card",
+    "beneficiary_id": "BEN-001",
+    "beneficiary_name": "Noon Jordan",
+    "status": "accepted",
+    "date": "2026-07-10T19:45:00Z"
+  }
+],
   "merchant_profiles": {
     "Noon Jordan": {
       "verified": true,

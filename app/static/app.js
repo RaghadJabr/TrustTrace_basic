@@ -262,11 +262,16 @@ function populateWeb3(key) {
 function buildRequest(type) {
   if (type === "traditional") {
     const key = $("traditionalScenario").value;
+    const scenario = state.scenarios.traditional[key];
+
     return {
-      ...state.scenarios.traditional[key],
+      ...scenario,
       amount: Number($("amount").value),
+      merchant: $("merchant").value.trim(),
+      domain: $("domain").value.trim(),
     };
   }
+
   return { ...state.scenarios.web3[$("web3Scenario").value] };
 }
 

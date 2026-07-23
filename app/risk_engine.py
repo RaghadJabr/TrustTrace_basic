@@ -81,6 +81,7 @@ class RiskEngine:
         )
 
     async def assess_traditional(self, request: TraditionalRiskRequest) -> RiskAssessment:
+        transactions = await self.jofs.get_transactions(request.account_id)
         account = await self.jofs.get_account(request.account_id)
         beneficiary = await self.jofs.get_beneficiary(
             request.account_id, request.beneficiary_id
@@ -105,7 +106,19 @@ class RiskEngine:
                 )
             )
 
-        average = float(account.get("average_transfer", 100))
+        debit_amounts = [
+            float(transaction["transactionAmount"]["amount"])
+            for transaction in transactions
+            if transaction.get("transactionType") == "debit"
+            and transaction.get("transactionAmount", {}).get("amount") is not None
+        ]
+
+        average = (
+            sum(debit_amounts) / len(debit_amounts)
+            if debit_amounts
+            else 100.0
+        )
+
         if request.amount >= average * 3:
             score += 20
             factors.append(

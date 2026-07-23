@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+
 RiskLevel = Literal["low", "review", "high"]
 Recommendation = Literal["continue", "review", "cancel"]
 Severity = Literal["low", "medium", "high"]
@@ -57,3 +58,45 @@ class Web3RiskRequest(BaseModel):
     approval_limit: Literal["limited", "unlimited"] = "limited"
     wallet_scam_reports: int = Field(default=0, ge=0)
     suspicious_network: bool = False
+
+
+class FundsConfirmationRequest(BaseModel):
+    amount: float = Field(gt=0)
+    currency: str = "JOD"
+
+
+class IBANConfirmationRequest(BaseModel):
+    account_type: str = Field(
+        min_length=1,
+        description=(
+            "Account identification scheme, normally IBAN."
+        ),
+    )
+
+    account_id: str = Field(
+        min_length=1,
+        description=(
+            "Account identifier, such as the IBAN."
+        ),
+    )
+
+    uid_type: str = Field(
+        min_length=1,
+        description=(
+            "Identity type, such as National ID or Passport."
+        ),
+    )
+
+    uid_value: str = Field(
+        min_length=1,
+        description=(
+            "Identity value to compare with the account holder."
+        ),
+    )
+
+    auth_date: str | None = Field(
+        default=None,
+        description=(
+            "Optional date and time of the latest authentication."
+        ),
+    )
