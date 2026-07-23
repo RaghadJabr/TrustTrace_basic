@@ -75,7 +75,7 @@ class JOFSAdapter:
         )
 
         data_path = (
-            Path(__file__).parent
+            Path(__file__).resolve().parent.parent.parent
             / "data"
             / "demo_data.json"
         )
